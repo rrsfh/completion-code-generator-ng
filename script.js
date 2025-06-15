@@ -3,7 +3,38 @@ function getURLParameter(name) {
     return new URLSearchParams(window.location.search).get(name);
 }
 
+// Function to submit data to Google Sheets automatically
+function submitForm(participantID, completionCode) {
+    var formData = new FormData();
+    formData.append('participantID', participantID);
+    formData.append('completionCode', completionCode);
 
+    // Google Sheets URL for form submission
+    var googleSheetURL = 'https://script.google.com/macros/s/AKfycbz3S7NOx8U5mh5V2T25J84cyolcgFJYcKbw8mST1k_WaJMzsTch7FH0c8QB-YUs8Jaosw/exec';
+
+    // Make the API request to Google Sheets
+    return fetch(googleSheetURL, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Form submitted successfully", data);
+    })
+    .catch(error => {
+        console.error("Error submitting the form", error);
+    });
+}
+
+// Function to redirect to the study link with the completion token
+function goToLink() {
+    if (completionToken) {
+        var url = `https://research.sc/participant/login/resume/${completionToken}`;
+        window.location.href = url; // Redirect to the study page
+    } else {
+        alert('Completion token is missing!');
+    }
+}
 
 // Extract and store the participant ID and completion token from the URL
 var participantID = getURLParameter('pid');
@@ -38,38 +69,7 @@ if (participantID) {
 }
 
 
-// Function to submit data to Google Sheets automatically
-function submitForm(participantID, completionCode) {
-    var formData = new FormData();
-    formData.append('participantID', participantID);
-    formData.append('completionCode', completionCode);
 
-    // Google Sheets URL for form submission
-    var googleSheetURL = 'https://script.google.com/macros/s/AKfycbz3S7NOx8U5mh5V2T25J84cyolcgFJYcKbw8mST1k_WaJMzsTch7FH0c8QB-YUs8Jaosw/exec';
-
-    // Make the API request to Google Sheets
-    return fetch(googleSheetURL, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Form submitted successfully", data);
-    })
-    .catch(error => {
-        console.error("Error submitting the form", error);
-    });
-}
-
-// Function to redirect to the study link with the completion token
-function goToLink() {
-    if (completionToken) {
-        var url = `https://research.sc/participant/login/resume/${completionToken}`;
-        window.location.href = url; // Redirect to the study page
-    } else {
-        alert('Completion token is missing!');
-    }
-}
 
 // Function to show alerts for different tabs
 function showAlert(tabName) {
